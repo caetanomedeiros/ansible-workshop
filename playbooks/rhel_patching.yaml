@@ -1,17 +1,16 @@
 ---
-- hosts: all
+- name: Update system and reboot if necessary
+  hosts: all
   become: true
 
-  tasks:  
-  - name: Update all installed packages using DNF module
-    ansible.builtin.dnf:
+  tasks:
+  - name: Update all installed packages using DNF module and reboot
+    ansible.builtin.package:
       name: '*'
       state: latest
-      update_cache: yes
-      update_only: yes
     register: dnf_update_status
 
-  - name: Reboot when packages were updated
+  - name: Reboot system when packages were updated
     ansible.builtin.reboot:
-      msg: "Reboot initiated by Ansible"
+      reboot_timeout: 300
     when: dnf_update_status.changed
